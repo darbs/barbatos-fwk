@@ -10,8 +10,9 @@ import (
 	"github.com/darbs/barbatos-fwk/mq"
 )
 
-// read is this application's translation to the message format, scanning from
-// stdin.
+/*
+Read content from stdin to push to message queue
+ */
 func read(r io.Reader) <-chan mq.Message {
 	lines := make(chan mq.Message)
 	go func() {
@@ -24,8 +25,9 @@ func read(r io.Reader) <-chan mq.Message {
 	return lines
 }
 
-// write is this application's subscriber of application messages, printing to
-// stdout.
+/*
+Write subscriber application messages to stdout
+ */
 func write(w io.Writer) chan<- mq.Message {
 	lines := make(chan mq.Message)
 	go func() {
@@ -36,20 +38,25 @@ func write(w io.Writer) chan<- mq.Message {
 	return lines
 }
 
-
 func main() {
 	fmt.Printf("Fwk main start\n")
 	flag.Parse()
+	var mqurl = "localhost"
+	var routeKey = "ATLAS_ROUTE"
+	var url = flag.String("url", "amqp:///", mqurl)
 
-	ctx, done := mq.GetContext()
+	var conf = mq.Config{Url: *url, Route: routeKey}
+	var ps = mq.GetPubSub(conf)
+	var ctx, done = ps.GetContext()
+
 	go func() {
 		in := read(os.Stdin)
-		mq.Publish(in)
+		ps.Publish(in)
 		done()
 	}()
 
 	go func() {
-		mq.Subscribe(write(os.Stdout))
+		ps.Subscribe(write(os.Stdout))
 		done()
 	}()
 
