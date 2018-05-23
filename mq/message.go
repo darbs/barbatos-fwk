@@ -1,5 +1,113 @@
 package mq
 
+import (
+	"log"
+	"time"
+	"context"
+
+	"github.com/rafaeljesus/rabbus"
+)
+
 type Message struct {
-	Content []byte
+	Data string `json:"data"`
+}
+
+type Config struct {
+	Url       string
+	Durable   bool
+	Attempts  int
+	Delay     time.Duration
+	Threshold uint32
+}
+
+type Connection struct {
+	rabbit *rabbus.Rabbus
+}
+
+//  fn func(name, from, to string) // todo
+func GetConnection(config Config) (Connection, error) {
+	rab, err := rabbus.New(
+		config.Url,
+		rabbus.Durable(config.Durable),
+		rabbus.Attempts(config.Attempts),
+		rabbus.Sleep(config.Delay),
+		rabbus.Threshold(config.Threshold),
+		//rabbus.OnStateChange(fn),
+	)
+
+	if err == nil {
+		return Connection{rab}, nil
+	}
+
+	return Connection{}, err
+}
+
+func (c Connection) Start(ctx context.Context) {
+	c.rabbit.Run(ctx)
+}
+
+func (c Connection) Stop() {
+	c.rabbit.Close()
+}
+
+func (c Connection) Listen(exchange string, kind string, key string, queue string) (chan Message, error) {
+	msgChan := make(chan Message)
+	messages, err := c.rabbit.Listen(rabbus.ListenConfig{
+		Exchange: exchange,
+		Kind:     kind,
+		Key:      key,
+		Queue:    queue,
+	})
+	if err != nil {
+		log.Fatalf("Failed to create listener %s", err)
+		return msgChan, err
+	}
+
+	// TODO context this shit
+	go func() {
+		for {
+			log.Println("Listening for messages...")
+
+			m, ok := <-messages
+
+			if !ok {
+				log.Println("Stop listening messages!")
+				// TODO log failure
+				//return msgChan, fmt.Errorf("error recieving messge")
+			}
+
+			m.Ack(false) // todo configurable
+
+			log.Println(string(m.Body))
+			log.Println("Message was consumed")
+
+			msgChan <- Message{string(m.Body)}
+		}
+	}()
+
+	return msgChan, nil
+}
+
+func (c Connection) Publish(exchange string, kind string, key string, payload string) {
+	msg := rabbus.Message{
+		Exchange: exchange,
+		Kind:     kind,
+		Key:      key,
+		Payload:  []byte(payload),
+	}
+
+	//msg.Payload = []byte((<-in).Content)
+	c.rabbit.EmitAsync() <- msg
+
+	select {
+	case <-c.rabbit.EmitOk():
+		log.Println("Message was sent")
+		//break outer
+	case err := <-c.rabbit.EmitErr():
+		log.Fatalf("Failed to send message %s", err)
+		//break outer
+	case <-time.After(time.Second * 3):
+		log.Println("got time out error")
+		//break outer
+	}
 }
