@@ -1,4 +1,4 @@
-package mq
+package messenger
 
 import (
 	"log"
@@ -7,18 +7,6 @@ import (
 
 	"github.com/rafaeljesus/rabbus"
 )
-
-type Message struct {
-	Data string `json:"data"`
-}
-
-type Config struct {
-	Url       string
-	Durable   bool
-	Attempts  int
-	Delay     time.Duration
-	Threshold uint32
-}
 
 type Connection struct {
 	rabbit *rabbus.Rabbus
@@ -32,7 +20,7 @@ func GetConnection(config Config) (Connection, error) {
 		rabbus.Attempts(config.Attempts),
 		rabbus.Sleep(config.Delay),
 		rabbus.Threshold(config.Threshold),
-		//rabbus.OnStateChange(fn),
+		//rabbus.OnStateChange(fn), // todo
 	)
 
 	if err == nil {

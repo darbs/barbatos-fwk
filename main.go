@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/darbs/barbatos-fwk/mq"
+	"github.com/darbs/barbatos-fwk/messenger"
 	"golang.org/x/net/context"
 )
 
@@ -55,14 +55,14 @@ func main() {
 	var url = flag.String(
 		"url", "amqp:///", mqurl)
 
-	var conf = mq.Config{
+	var conf = messenger.Config{
 		Url: *url,
 		Durable: true,
 		Attempts: 5,
 		Delay: time.Second * 2,
 		Threshold: 4,
 	}
-	var msgConn, err = mq.GetConnection(conf)
+	var msgConn, err = messenger.GetConnection(conf)
 	if err != nil {
 		fmt.Errorf("Failed to connect to message queue")
 		os.Exit(1)
