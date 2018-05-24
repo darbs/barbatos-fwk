@@ -1,6 +1,7 @@
 package messenger
 
 import (
+	"fmt"
 	"log"
 	"time"
 	"context"
@@ -76,7 +77,7 @@ func (c Connection) Listen(exchange string, kind string, key string, queue strin
 	return msgChan, nil
 }
 
-func (c Connection) Publish(exchange string, kind string, key string, payload string) {
+func (c Connection) Publish(exchange string, kind string, key string, payload string) error {
 	msg := rabbus.Message{
 		Exchange: exchange,
 		Kind:     kind,
@@ -89,13 +90,13 @@ func (c Connection) Publish(exchange string, kind string, key string, payload st
 
 	select {
 	case <-c.rabbit.EmitOk():
-		log.Println("Message was sent")
-		//break outer
 	case err := <-c.rabbit.EmitErr():
-		log.Fatalf("Failed to send message %s", err)
+		return err;
 		//break outer
 	case <-time.After(time.Second * 3):
-		log.Println("got time out error")
+		return fmt.Errorf("Failed")
 		//break outer
 	}
+
+	return nil
 }
