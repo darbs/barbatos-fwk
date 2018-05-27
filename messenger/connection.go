@@ -13,7 +13,10 @@ type Connection struct {
 	rabbit *rabbus.Rabbus
 }
 
-//  fn func(name, from, to string) // todo
+func connectionStateChange (name, from, to string) {
+	log.Println("Connection state %v changed from %v to %v", name, from, to)
+}
+
 func GetConnection(config Config) (Connection, error) {
 	rab, err := rabbus.New(
 		config.Url,
@@ -21,7 +24,7 @@ func GetConnection(config Config) (Connection, error) {
 		rabbus.Attempts(config.Attempts),
 		rabbus.Sleep(config.Delay),
 		rabbus.Threshold(config.Threshold),
-		//rabbus.OnStateChange(fn), // todo
+		rabbus.OnStateChange(connectionStateChange),
 	)
 
 	if err == nil {
@@ -85,17 +88,14 @@ func (c Connection) Publish(exchange string, kind string, key string, payload st
 		Payload:  []byte(payload),
 	}
 
-	//msg.Payload = []byte((<-in).Content)
 	c.rabbit.EmitAsync() <- msg
 
 	select {
 	case <-c.rabbit.EmitOk():
 	case err := <-c.rabbit.EmitErr():
-		return err;
-		//break outer
+		return err
 	case <-time.After(time.Second * 3):
 		return fmt.Errorf("Failed")
-		//break outer
 	}
 
 	return nil

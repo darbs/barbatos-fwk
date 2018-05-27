@@ -1,6 +1,13 @@
-hash: 284dacda95c5cab14d3f25964bed8e8ee0fb4174c13f3b84ec321504a959d0e7
-updated: 2018-05-22T22:48:51.838114-05:00
+hash: e03be7ca24c0a9b32ebb74e39a86737d33db03dc56aa35be6357a53ec0422527
+updated: 2018-05-26T11:19:41.72282-05:00
 imports:
+- name: github.com/globalsign/mgo
+  version: efe0945164a7e582241f37ae8983c075f8f2e870
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
 - name: github.com/rafaeljesus/rabbus
   version: 15a5619c2bfa299a6f3aecc98a43791b5e0bcf25
   subpackages:
