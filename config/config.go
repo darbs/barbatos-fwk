@@ -30,15 +30,15 @@ func init() {
 		filename = "test.json"
 	}
 
-	if filename != "" {
-		log.Printf("Loading configs - %v", filename)
-	}
-
 	if configPath == "" {
 		configPath = "configs"
 	}
 
-	fp := filepath.Join(configPath,filename)
+	fp := filepath.Join(configPath, filename)
+	if filename != "" {
+		log.Printf("Loading - %v", fp)
+	}
+
 	err := gonfig.GetConf(fp, &config)
 	if err != nil {
 		log.Fatalf("ERROR: %v", err)
