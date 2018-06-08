@@ -80,7 +80,7 @@ func (c Connection) Listen(exchange string, kind string, key string, queue strin
 	return msgChan, nil
 }
 
-func (c Connection) Publish(exchange string, kind string, key string, payload string) error {
+func (c Connection) Publish(exchange string, kind string, key string, payload []byte) error {
 	msg := rabbus.Message{
 		Exchange: exchange,
 		Kind:     kind,
