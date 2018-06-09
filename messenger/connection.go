@@ -70,8 +70,8 @@ func (c Connection) Listen(exchange string, kind string, key string, queue strin
 
 			m.Ack(false) // todo configurable
 
-			log.Println(string(m.Body))
-			log.Println("Message was consumed")
+			//log.Println(string(m.Body))
+			//log.Println("Message was consumed")
 
 			msgChan <- Message{string(m.Body)}
 		}

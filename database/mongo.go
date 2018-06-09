@@ -81,5 +81,5 @@ func (d database) Index(table string, index Index) error {
 }
 
 func (d database) Insert(table string, document ...interface{}) error {
-	return d.Table(table).Insert(document)
+	return d.Table(table).Insert(document...)
 }
