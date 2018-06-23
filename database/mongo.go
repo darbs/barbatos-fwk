@@ -17,13 +17,16 @@ var (
 )
 
 type database struct {
-	session  *mgo.Session
+	session *mgo.Session
+}
+
+type table struct {
+	collection *mgo.Collection
 }
 
 // Note go vendoring is kind of weird
 // need to hide this from any other package that
 // vendors the fwk lib else types dont match up
-type Collection *mgo.Collection
 type Index struct {
 	Key        []string // Index key fields; prefix name with dash (-) for descending order
 	Unique     bool     // Prevent two documents from having the same index key
@@ -62,16 +65,18 @@ func Database() (*database) {
 	return singleton
 }
 
-func (d database) Table(table string) *mgo.Collection {
-	return d.session.DB(dbName).C(table)
-}
-
 //////////////////////////////
 // Vendor related wrappings //
 //////////////////////////////
 
-func (d database) Index(table string, index Index) error {
-	return d.Table(table).EnsureIndex(mgo.Index{
+// Get/Create collection
+func (d database) Table(tableName string) *table {
+	return &table{collection: d.session.DB(dbName).C(tableName)}
+}
+
+// Ensure index on collection
+func (t table) Index(index Index) error {
+	return t.collection.EnsureIndex(mgo.Index{
 		Key:        index.Key,
 		Unique:     index.Unique,
 		DropDups:   !index.Dups,
@@ -80,6 +85,29 @@ func (d database) Index(table string, index Index) error {
 	})
 }
 
-func (d database) Insert(table string, document ...interface{}) error {
-	return d.Table(table).Insert(document...)
+// Empty collection
+func (t table) Empty() error {
+	return t.collection.DropCollection()
 }
+
+// Insert item into table
+func (t table) Insert(document ...interface{}) error {
+	return t.collection.Insert(document...)
+}
+
+// Find item from table
+func (t table) Find(params interface{}, result interface{}, limit int) (error) {
+	query := t.collection.Find(params)
+	if limit > 0 {
+		query.Limit(limit)
+	}
+
+	err := query.Iter().All(result)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// TODO bulk insert

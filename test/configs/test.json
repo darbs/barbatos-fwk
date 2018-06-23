@@ -1,0 +1,5 @@
+{
+  "DbEndpoint": "localhost",
+  "DbName": "FwkTest",
+  "MqEndpoint": ""
+}

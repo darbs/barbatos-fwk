@@ -14,7 +14,7 @@ type Connection struct {
 }
 
 func connectionStateChange (name, from, to string) {
-	log.Println("Connection state %v changed from %v to %v", name, from, to)
+	log.Printf("Connection state %v changed from %v to %v", name, from, to)
 }
 
 func GetConnection(config Config) (Connection, error) {
