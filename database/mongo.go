@@ -24,6 +24,8 @@ type table struct {
 	collection *mgo.Collection
 }
 
+type Query map[string]interface{}
+
 // Note go vendoring is kind of weird
 // need to hide this from any other package that
 // vendors the fwk lib else types dont match up
