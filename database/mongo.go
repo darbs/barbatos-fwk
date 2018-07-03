@@ -10,20 +10,23 @@ import (
 )
 
 var (
-	singleton *database
+	singleton *Database
 	once      sync.Once
 	dbName    string
 	endpoint  string
 )
 
-type database struct {
+// Singleton database instance
+type Database struct {
 	session *mgo.Session
 }
 
-type table struct {
+// Table interface that wraps mgo collections
+type Table struct {
 	collection *mgo.Collection
 }
 
+// Query interface that wraps mgg functionality
 type Query map[string]interface{}
 
 // Note go vendoring is kind of weird
@@ -37,12 +40,14 @@ type Index struct {
 	Sparse     bool     // Only index documents containing the Key fields
 }
 
+// Configure static db instance
 func Configure(url string, name string) {
 	endpoint = url
 	dbName = name
 }
 
-func Database() (*database) {
+// Get database connection
+func GetDatabase() (*Database) {
 	if endpoint == "" {
 		panic(fmt.Errorf("no db endpoint defined"))
 	}
@@ -61,7 +66,7 @@ func Database() (*database) {
 		// TODO decide on a mode
 		//session.SetMode(mgo.Monotonic, true)
 
-		singleton = &database{session: session}
+		singleton = &Database{session: session}
 	})
 
 	return singleton
@@ -72,12 +77,12 @@ func Database() (*database) {
 //////////////////////////////
 
 // Get/Create collection
-func (d database) Table(tableName string) *table {
-	return &table{collection: d.session.DB(dbName).C(tableName)}
+func (d Database) Table(tableName string) *Table {
+	return &Table{collection: d.session.DB(dbName).C(tableName)}
 }
 
 // Ensure index on collection
-func (t table) Index(index Index) error {
+func (t Table) Index(index Index) error {
 	return t.collection.EnsureIndex(mgo.Index{
 		Key:        index.Key,
 		Unique:     index.Unique,
@@ -88,17 +93,17 @@ func (t table) Index(index Index) error {
 }
 
 // Empty collection
-func (t table) Empty() error {
+func (t Table) Empty() error {
 	return t.collection.DropCollection()
 }
 
-// Insert item into table
-func (t table) Insert(document ...interface{}) error {
+// Insert item into Table
+func (t Table) Insert(document ...interface{}) error {
 	return t.collection.Insert(document...)
 }
 
-// Find item from table
-func (t table) Find(params interface{}, result interface{}, limit int) (error) {
+// Find item from Table
+func (t Table) Find(params interface{}, result interface{}, limit int) (error) {
 	query := t.collection.Find(params)
 	if limit > 0 {
 		query.Limit(limit)

@@ -28,13 +28,13 @@ func TestDbConnectFail(t *testing.T) {
 	}()
 
 	database.Configure("", "")
-	database.Database()
+	database.GetDatabase()
 }
 
 func TestDbCreateIndex(t *testing.T) {
 	conf := config.GetConfig()
 	database.Configure(conf.DbEndpoint, conf.DbName)
-	db := database.Database()
+	db := database.GetDatabase()
 	table := db.Table(tableName)
 
 
@@ -56,7 +56,7 @@ func TestDbCreateIndex(t *testing.T) {
 func TestDbInsertOne(t *testing.T) {
 	conf := config.GetConfig()
 	database.Configure(conf.DbEndpoint, conf.DbName)
-	db := database.Database()
+	db := database.GetDatabase()
 	table := db.Table(tableName)
 
 	gen := generic{testId}
@@ -69,7 +69,7 @@ func TestDbInsertOne(t *testing.T) {
 func TestDbInsertMany(t *testing.T) {
 	conf := config.GetConfig()
 	database.Configure(conf.DbEndpoint, conf.DbName)
-	db := database.Database()
+	db := database.GetDatabase()
 	table := db.Table(tableName)
 
 	err := table.Insert(generic{"123"}, generic{"456"})
@@ -84,7 +84,7 @@ func TestDbInsertMany(t *testing.T) {
 func TestDbFindOne(t *testing.T) {
 	conf := config.GetConfig()
 	database.Configure(conf.DbEndpoint, conf.DbName)
-	db := database.Database()
+	db := database.GetDatabase()
 	table := db.Table(tableName)
 
 	var res []generic
@@ -101,7 +101,7 @@ func TestDbFindOne(t *testing.T) {
 func TestDbFindAll(t *testing.T) {
 	conf := config.GetConfig()
 	database.Configure(conf.DbEndpoint, conf.DbName)
-	db := database.Database()
+	db := database.GetDatabase()
 	table := db.Table(tableName)
 
 	gen := generic{testId}
@@ -122,7 +122,7 @@ func TestDbFindAll(t *testing.T) {
 func TestDbEmpty(t *testing.T) {
 	conf := config.GetConfig()
 	database.Configure(conf.DbEndpoint, conf.DbName)
-	db := database.Database()
+	db := database.GetDatabase()
 
 	table := db.Table(tableName)
 
@@ -141,7 +141,7 @@ func TestDbEmpty(t *testing.T) {
 func setup () {
 	conf := config.GetConfig()
 	database.Configure(conf.DbEndpoint, conf.DbName)
-	db := database.Database()
+	db := database.GetDatabase()
 	table := db.Table(tableName)
 
 	table.Empty()
