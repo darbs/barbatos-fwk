@@ -89,7 +89,6 @@ func (c Connection) Publish(exchange string, kind string, key string, payload []
 	}
 
 	c.rabbit.EmitAsync() <- msg
-
 	select {
 	case <-c.rabbit.EmitOk():
 	case err := <-c.rabbit.EmitErr():
