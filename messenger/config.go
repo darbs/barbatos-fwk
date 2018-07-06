@@ -6,6 +6,12 @@ type Message struct {
 	Data string `json:"data"`
 }
 
+type RpcMessage struct {
+	ResponseId string
+	Action string
+	Data interface{}
+}
+
 type Config struct {
 	Url       string
 	Durable   bool
