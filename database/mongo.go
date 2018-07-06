@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"sync"
 
 	// TODO use mongodb official lib once its released
@@ -59,8 +58,7 @@ func GetDatabase() (*Database) {
 	once.Do(func() {
 		session, err := mgo.Dial(endpoint)
 		if err != nil {
-			log.Println("failed to connect to db")
-			panic(err)
+			panic(fmt.Errorf("Failed to connect to mongo 0database: %v", err))
 		}
 
 		// TODO decide on a mode

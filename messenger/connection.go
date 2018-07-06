@@ -2,11 +2,11 @@ package messenger
 
 import (
 	"fmt"
-	"log"
 	"time"
 	"context"
 
 	"github.com/rafaeljesus/rabbus"
+	log "github.com/sirupsen/logrus"
 )
 
 type Connection struct {
@@ -14,7 +14,7 @@ type Connection struct {
 }
 
 func connectionStateChange (name, from, to string) {
-	log.Printf("Connection state %v changed from %v to %v", name, from, to)
+	log.Infof("Connection state %v changed from %v to %v", name, from, to)
 }
 
 func GetConnection(config Config) (Connection, error) {
@@ -51,21 +51,18 @@ func (c Connection) Listen(exchange string, kind string, key string, queue strin
 		Queue:    queue,
 	})
 	if err != nil {
-		log.Fatalf("Failed to create listener %s", err)
+		log.Errorf("Failed to create listener %s", err)
 		return msgChan, err
 	}
 
 	// TODO context this shit
 	go func() {
 		for {
-			log.Println("Listening for messages...")
-
 			m, ok := <-messages
 
 			if !ok {
-				log.Println("Stop listening messages!")
-				// TODO log failure
-				//return msgChan, fmt.Errorf("error recieving messge")
+				log.Warnf("Message not acked properly!")
+				continue
 			}
 
 			m.Ack(false) // todo configurable

@@ -1,8 +1,8 @@
-hash: e03be7ca24c0a9b32ebb74e39a86737d33db03dc56aa35be6357a53ec0422527
-updated: 2018-05-26T11:19:41.72282-05:00
+hash: c7c26b8a55e88868903c978be11c22eed2f6fd0647fb06241edc12970a435416
+updated: 2018-07-05T21:22:22.349176-05:00
 imports:
 - name: github.com/globalsign/mgo
-  version: efe0945164a7e582241f37ae8983c075f8f2e870
+  version: 113d3961e7311526535a1ef7042196563d442761
   subpackages:
   - bson
   - internal/json
@@ -14,12 +14,21 @@ imports:
   - internal/amqp
 - name: github.com/rafaeljesus/retry-go
   version: 5981a380a87925ee03a78a7ff13574fabc804837
+- name: github.com/sirupsen/logrus
+  version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
 - name: github.com/sony/gobreaker
   version: 3cb67c77c1d1e72fda30c6970578164d24f806b6
 - name: github.com/streadway/amqp
-  version: 8e4aba63da9fc5571e01c6a45dc809a58cbc5a68
-- name: golang.org/x/net
-  version: 2491c5de3490fced2f6cff376127c667efeed857
+  version: e5adc2ada8b8efff032bf61173a233d143e9318e
+- name: github.com/tkanos/gonfig
+  version: 140e7c7ecea9170d71a841e208b86685c845eb53
+- name: golang.org/x/crypto
+  version: a49355c7e3f8fe157a85be2f77e6e269a0f89602
   subpackages:
-  - context
+  - ssh/terminal
+- name: golang.org/x/sys
+  version: 151529c776cdc58ddbe7963ba9af779f3577b419
+  subpackages:
+  - unix
+  - windows
 testImports: []

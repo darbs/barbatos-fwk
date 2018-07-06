@@ -1,11 +1,11 @@
 package config
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/tkanos/gonfig"
+	log "github.com/sirupsen/logrus"
 )
 
 type Configuration struct {
@@ -17,6 +17,12 @@ type Configuration struct {
 var config Configuration
 
 func init() {
+	loglevel, err := log.ParseLevel(os.Getenv("LOG_LEVEL"))
+	if err != nil {
+		panic(err)
+	}
+	log.SetLevel(loglevel)
+
 	env := os.Getenv("MODE")
 	configPath := os.Getenv("CONFIG_PATH")
 
@@ -36,7 +42,7 @@ func init() {
 
 	fp := filepath.Join(configPath, filename)
 	if filename != "" {
-		log.Printf("Loading - %v", fp)
+		log.Infof("Loading - %v", fp)
 	}
 
 	err := gonfig.GetConf(fp, &config)
