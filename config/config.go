@@ -45,7 +45,7 @@ func init() {
 		log.Infof("Loading - %v", fp)
 	}
 
-	err := gonfig.GetConf(fp, &config)
+	err = gonfig.GetConf(fp, &config)
 	if err != nil {
 		log.Fatalf("ERROR: %v", err)
 		panic(err)
