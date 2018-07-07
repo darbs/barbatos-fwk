@@ -6,6 +6,7 @@ import (
 
 	// TODO use mongodb official lib once its released
 	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 var (
@@ -68,6 +69,11 @@ func GetDatabase() (*Database) {
 	})
 
 	return singleton
+}
+
+// Get new object Id
+func GetNewObjectId () string {
+	return bson.NewObjectId().String()
 }
 
 //////////////////////////////
