@@ -106,6 +106,11 @@ func (t Table) Insert(document ...interface{}) error {
 	return t.collection.Insert(document...)
 }
 
+// Upsert item into Table
+func (t Table) Upsert(search interface{}, document interface{}) (interface{}, error) {
+	return t.collection.Upsert(search, document)
+}
+
 // Find item from Table
 func (t Table) Find(params interface{}, result interface{}, limit int) (error) {
 	query := t.collection.Find(params)
